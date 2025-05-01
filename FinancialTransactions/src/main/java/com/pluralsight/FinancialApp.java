@@ -129,33 +129,11 @@ public class FinancialApp {
         System.out.println("Enter your choice");
 
 
-        try {
-            FileReader fileReader = new FileReader("data/transactions.csv");
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-            bufferedReader.readLine();
-
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] tokens = line.split("\\|");
-
-                LocalDateTime dateTime = LocalDateTime.parse(tokens[0] + "T" + tokens[1]);
-                String description = tokens[2];
-                String vendor = tokens[3];
-                double amount = Double.parseDouble(tokens[4]);
-                Ledger ledger = new Ledger(dateTime, description, vendor, amount);
-                System.out.println(ledger.display());
-
-            }
-            bufferedReader.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
         boolean running = true;
 
         while (running) {
 
-            viewLedger();
+
             int displayLedger = scanner.nextInt();
             scanner.nextLine();
 
@@ -184,17 +162,31 @@ public class FinancialApp {
     }
 
     public static void displayAllTransactions(){
-        try {
-           FileReader fileReader = new FileReader("data/transactions.csv");
-           BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line;
 
+        try {
+            FileReader fileReader = new FileReader("data/transactions.csv");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            bufferedReader.readLine();
+
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
+                String[] tokens = line.split("\\|");
+
+                LocalDateTime dateTime = LocalDateTime.parse(tokens[0] + "T" + tokens[1]);
+                String description = tokens[2];
+                String vendor = tokens[3];
+                double amount = Double.parseDouble(tokens[4]);
+                Ledger ledger = new Ledger(dateTime, description, vendor, amount);
+                System.out.println(ledger.display());
+
             }
+            bufferedReader.close();
+            fileReader.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
     public static void displayDeposit(){
         System.out.println("\n---Deposits---");
