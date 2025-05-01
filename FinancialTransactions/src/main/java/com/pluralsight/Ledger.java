@@ -10,6 +10,7 @@ public class Ledger {
     private double amount;
 
     public Ledger(LocalDateTime dateTime, String description, String vendor, double amount) {
+        this.dateTime = dateTime;
         this.dateTime = LocalDateTime.now();
         this.description = description;
         this.vendor = vendor;
@@ -62,13 +63,13 @@ public class Ledger {
 
     }
 
-    @Override
-    public String toString() {
-        return "Ledger{" +
-                "dateTime=" + dateTime +
-                ", description='" + description + '\'' +
-                ", vendor='" + vendor + '\'' +
-                ", amount=" + amount +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Ledger{" +
+//                "dateTime=" + dateTime +
+//                ", description='" + description + '\'' +
+//                ", vendor='" + vendor + '\'' +
+//                ", amount=" + amount +
+//                '}';
+//    }
 }

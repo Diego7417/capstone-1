@@ -3,10 +3,16 @@ package com.pluralsight;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class FinancialApp {
     private static final Scanner scanner = new Scanner(System.in);
+    DateTimeFormatter format;
+
+    {
+        format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    }
 
     public static void main(String[] args) {
 
@@ -49,7 +55,13 @@ public class FinancialApp {
         System.out.println("3. View Ledger");
         System.out.println("4. Exit");
         System.out.print("Enter your choice: ");
-//        promptReturnToMenu();
+
+    }
+
+    private static void promptReturnToMenu() {
+        System.out.println("\nPress Enter to Return to the Main Menu");
+        scanner.nextLine();
+
     }
 
     public static void makeDeposit() {
@@ -65,7 +77,14 @@ public class FinancialApp {
         double amount = scanner.nextDouble();
         scanner.nextLine();
 
-        LocalDate dateTime = LocalDate.now();
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+
+        String date = dateTime.format(dateFormatter);
+
+
 
         try {
             FileWriter fileWriter = new FileWriter("data/transactions.csv", true);
@@ -81,7 +100,7 @@ public class FinancialApp {
         }
         System.out.println("Deposit recorded successfully");
 
-//        promptReturnToMenu();
+        promptReturnToMenu();
     }
 
     public static void makeAPayment() {
@@ -116,7 +135,7 @@ public class FinancialApp {
         System.out.println("Payment received");
 
 
-//        promptReturnToMenu();
+        promptReturnToMenu();
     }
 
     public static void viewLedger() {
@@ -156,12 +175,14 @@ public class FinancialApp {
                 default:
                     System.out.println("Invalid option.Please try again");
             }
-//        promptReturnToMenu();
+            promptReturnToMenu();
+
         }
+
 
     }
 
-    public static void displayAllTransactions(){
+    public static void displayAllTransactions() {
 
         try {
             FileReader fileReader = new FileReader("data/transactions.csv");
@@ -182,26 +203,27 @@ public class FinancialApp {
 
             }
             bufferedReader.close();
-            fileReader.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
     }
-    public static void displayDeposit(){
+
+    public static void displayDeposit() {
         System.out.println("\n---Deposits---");
 
         try {
             FileReader fileReader = new FileReader("data/transactions.csv");
             BufferedReader bufferedReader = new BufferedReader(fileReader);
+            bufferedReader.readLine();
 
             String line;
 
-            while ((line = bufferedReader.readLine()) != null){
+            while ((line = bufferedReader.readLine()) != null) {
                 String[] parts = line.split("\\|");
-                if (parts.length >= 5){
+                if (parts.length >= 5) {
                     double amount = Double.parseDouble(parts[4]);
-                    if (amount >= 0){
+                    if (amount >= 0) {
                         System.out.println(line);
                     }
                 }
@@ -211,12 +233,14 @@ public class FinancialApp {
             throw new RuntimeException(e);
         }
     }
-    public static void  displayPayments(){
+
+    public static void displayPayments() {
         System.out.println("\n---Payments---");
 
         try {
             FileReader fileReader = new FileReader("data/transactions.csv");
             BufferedReader bufferedReader = new BufferedReader(fileReader);
+            bufferedReader.readLine();
 
             String line;
 
@@ -235,9 +259,126 @@ public class FinancialApp {
             throw new RuntimeException(e);
         }
     }
-    public static void displayReports(){
-        System.out.println("\n---Run reports---");
+
+    public static void displayReports() {
+        boolean running = true;
+
+        while (running) {
+            System.out.println("\n--- Reports Menu ---");
+            System.out.println("1. Month To Date");
+            System.out.println("2. Previous Month");
+            System.out.println("3. Year To Date");
+            System.out.println("4. Previous Year");
+            System.out.println("5. Search by Vendor");
+            System.out.println("0. Back");
+            System.out.print("Enter your choice: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    filterByMonth(LocalDate.now().getYear(), LocalDate.now().getMonthValue());
+                    break;
+                case 2:
+                    LocalDate lastMonth = LocalDate.now().minusMonths(1);
+                    filterByMonth(lastMonth.getYear(), lastMonth.getMonthValue());
+                    break;
+                case 3:
+                    filterByYear(LocalDate.now().getYear());
+                    break;
+                case 4:
+                    filterByYear(LocalDate.now().getYear() - 1);
+                    break;
+                case 5:
+                    System.out.print("Enter vendor name to search: ");
+                    String vendor = scanner.nextLine();
+                    filterByVendor(vendor);
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+            }
+            promptReturnToMenu();
+        }
+    }
+    public static void filterByMonth(int year, int month){
+        System.out.println("\n--- Transactions for " + year + "-" + String.format("%02d", month) + " ---");
+
+        try {
+            FileReader fileReader = new FileReader("data/transactions.csv");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            bufferedReader.readLine();
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null){
+                String[] parts = line.split("\\|");
+                if (parts.length >= 5){
+                    LocalDate date = LocalDate.parse(parts[0]);
+                    if (date.getYear() == year && date.getMonthValue() == month){
+                        System.out.println(line);
+                    }
+                }
+            }
+            bufferedReader.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void filterByYear(int year){
+        System.out.println("\n--- Transactions for Year: " + year + " ---");
+
+        try {
+            FileReader fileReader = new FileReader("data/transactions.csv");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            bufferedReader.readLine();
+
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null){
+                String[] parts = line.split("\\|");
+                if (parts.length >= 5){
+                    LocalDate date = LocalDate.parse(parts[0]);
+
+                    if (date.getYear() == year){
+                        System.out.println(line);
+                    }
+                }
+            }
+            bufferedReader.close();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void filterByVendor(String vendorSearch){
+        System.out.println("\n--- Transactions for Vendor: " + vendorSearch + " ---");
+
+        try {
+            FileReader fileReader = new FileReader("data/transactions.csv");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null){
+                String[] parts = line.split("\\|");
+                if (parts.length >= 5){
+                   String vendor = parts[3];
+
+                    if (vendor.equalsIgnoreCase(vendorSearch)){
+                        System.out.println(line);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
 
     }
 
+
 }
+
