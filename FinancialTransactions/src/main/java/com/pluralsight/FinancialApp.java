@@ -67,6 +67,7 @@ public class FinancialApp {
     public static void makeDeposit() {
         System.out.println("\nDeposit");
 
+
         System.out.println("Enter Description");
         String description = scanner.nextLine();
 
@@ -81,8 +82,10 @@ public class FinancialApp {
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+        String date = dateTime.toLocalDate().toString();
+        String time = dateTime.toLocalTime().withNano(0).toString();
 
-        String date = dateTime.format(dateFormatter);
+
 
 
 
@@ -90,15 +93,16 @@ public class FinancialApp {
             FileWriter fileWriter = new FileWriter("data/transactions.csv", true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-            String line = String.format("%s|%s|%s|%.2f", dateTime, description, vendor, amount);
-            bufferedWriter.write(line);
+            String line = String.format("%s|%s|%s|%s|%.2f", date, time, description, vendor, amount);
             bufferedWriter.newLine();
+            bufferedWriter.write(line);
+
 
             bufferedWriter.close();
+            System.out.println("Deposit recorded successfully");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Deposit recorded successfully");
 
         promptReturnToMenu();
     }
@@ -118,15 +122,19 @@ public class FinancialApp {
 
         amount = -Math.abs(amount);
 
-        LocalDate dateTime = LocalDate.now();
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        String date = dateTime.toLocalDate().toString();
+        String time = dateTime.toLocalTime().withNano(0).toString();
 
         try {
             FileWriter fileWriter = new FileWriter("data/transactions.csv", true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-            String line = String.format("%s|%s|%s|%.2f", dateTime, description, vendor, amount);
-            bufferedWriter.write(line);
+            String line = String.format("%s|%s|%s|%s|%.2f", date, time, description, vendor, amount);
             bufferedWriter.newLine();
+            bufferedWriter.write(line);
+
 
             bufferedWriter.close();
         } catch (Exception e) {
@@ -188,6 +196,7 @@ public class FinancialApp {
     }
 
     public static void displayAllTransactions() {
+        System.out.println("\n---All Transactions---");
 
         try {
             FileReader fileReader = new FileReader("data/transactions.csv");
