@@ -159,23 +159,28 @@ public class FinancialApp {
             switch (displayLedger) {
                 case 1:
                     displayAllTransactions();
+                    promptReturnToMenu();
                     break;
                 case 2:
                     displayDeposit();
+                    promptReturnToMenu();
                     break;
                 case 3:
                     displayPayments();
+                    promptReturnToMenu();
                     break;
                 case 4:
                     displayReports();
+                    promptReturnToMenu();
                     break;
                 case 5:
                     running = false;
+                    promptReturnToMenu();
                     break;
                 default:
                     System.out.println("Invalid option.Please try again");
             }
-            promptReturnToMenu();
+
 
         }
 
